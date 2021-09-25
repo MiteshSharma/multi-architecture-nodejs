@@ -1,0 +1,38 @@
+# Each architecture has its own repository on dockerhub.com
+# Most of them has pre-build base image such as debian, ubuntu, or alpine
+# For NodeJS application we can use alpine the most slim base image
+
+# Example of command:
+# - docker build -f Dockerfile-manifest -t 234971843858.dkr.ecr.ap-southeast-1.amazonaws.com/testing-multi-arc:manifest-i386 --build-arg ARCH=i386 .
+#   docker push 234971843858.dkr.ecr.ap-southeast-1.amazonaws.com/testing-multi-arc:manifest-i386
+#
+# - docker build -f Dockerfile-manifest -t 234971843858.dkr.ecr.ap-southeast-1.amazonaws.com/testing-multi-arc:manifest-amd64 --build-arg ARCH=amd64 .
+#   docker push 234971843858.dkr.ecr.ap-southeast-1.amazonaws.com/testing-multi-arc:manifest-amd64
+#
+# - docker build -f Dockerfile-manifest -t 234971843858.dkr.ecr.ap-southeast-1.amazonaws.com/testing-multi-arc:manifest-arm32v7 --build-arg ARCH=arm32v7 .
+#   docker push 234971843858.dkr.ecr.ap-southeast-1.amazonaws.com/testing-multi-arc:manifest-arm32v7
+#
+# - docker build -f Dockerfile-manifest -t 234971843858.dkr.ecr.ap-southeast-1.amazonaws.com/testing-multi-arc:manifest-arm64v8 --build-arg ARCH=arm64v8 .
+#   docker push 234971843858.dkr.ecr.ap-southeast-1.amazonaws.com/testing-multi-arc:manifest-arm64v8
+#
+# - docker manifest create 234971843858.dkr.ecr.ap-southeast-1.amazonaws.com/testing-multi-arc \
+#       --amend 234971843858.dkr.ecr.ap-southeast-1.amazonaws.com/testing-multi-arc:manifest-i386 \
+#       --amend 234971843858.dkr.ecr.ap-southeast-1.amazonaws.com/testing-multi-arc:manifest-amd64 \
+#       --amend 234971843858.dkr.ecr.ap-southeast-1.amazonaws.com/testing-multi-arc:manifest-arm32v7 \
+#       --amend 234971843858.dkr.ecr.ap-southeast-1.amazonaws.com/testing-multi-arc:manifest-arm64v8 
+#
+# - docker manifest push 234971843858.dkr.ecr.ap-southeast-1.amazonaws.com/testing-multi-arc:latest
+
+ARG ARCH=
+FROM ${ARCH}/alpine:3.11
+
+RUN apk add --update npm
+
+WORKDIR /app
+COPY ./src /app/
+
+RUN npm install
+
+EXPOSE 3000
+
+CMD ["npm", "start"]
