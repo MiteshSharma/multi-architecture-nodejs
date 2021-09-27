@@ -98,6 +98,8 @@ gcp_project_name       = "ashari-tech-main"
 github_credential_user_name = "aashari"
 github_repository_url       = "https://github.com/aashari/crossx-nodejs.git"
 ```
+> Note for GCP implementation, you have to add your github repository into your CloudBuild repository mapping
+> https://console.cloud.google.com/cloud-build/repos
 
 Initialize and Apply terraform
 ```
@@ -137,6 +139,7 @@ You just need to run a `git commit` and `git push` to trigger the cloud build
 #### Buildx
 
 ##### Step 1: Initialize Buildx
+
 Make sure you enable buildx plugin on your local machine, to verify the buildx, you can run below command:
 ```
 docker buildx ls
