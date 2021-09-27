@@ -5,3 +5,4 @@ node_modules
 *.tfstate.*
 script-create-manifest-commit-tag.sh
 script-create-manifest-latest-tag.sh
+.DS_Store
