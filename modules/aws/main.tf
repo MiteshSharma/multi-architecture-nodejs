@@ -50,6 +50,30 @@ resource "aws_iam_role_policy" "codebuild_policy" {
           Resource : [
             format("arn:aws:codebuild:%s:%s:report-group/%s-*", data.aws_region.current.name, data.aws_caller_identity.current.account_id, local.codebuild_name)
           ]
+        },
+        {
+          Effect : "Allow",
+          Action : [
+            "ecr:BatchGetImage",
+            "ecr:BatchCheckLayerAvailability",
+            "ecr:CompleteLayerUpload",
+            "ecr:GetDownloadUrlForLayer",
+            "ecr:InitiateLayerUpload",
+            "ecr:PutImage",
+            "ecr:UploadLayerPart"
+          ],
+          Resource : [
+            aws_ecr_repository.repository.arn
+          ]
+        },
+        {
+          Effect : "Allow",
+          Action : [
+            "ecr:GetAuthorizationToken"
+          ],
+          Resource : [
+            "*"
+          ]
         }
       ]
     }
@@ -74,9 +98,10 @@ resource "aws_codebuild_project" "default" {
 
   environment {
     compute_type                = "BUILD_GENERAL1_SMALL"
-    image                       = "aws/codebuild/standard:1.0"
+    image                       = "aws/codebuild/standard:3.0"
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
+    privileged_mode             = true
 
     environment_variable {
       name  = "AWS_REGION"
@@ -86,6 +111,21 @@ resource "aws_codebuild_project" "default" {
     environment_variable {
       name  = "AWS_ACCOUNT_ID"
       value = data.aws_caller_identity.current.account_id
+    }
+
+    environment_variable {
+      name  = "SERVICE_NAME"
+      value = var.service_name
+    }
+
+    environment_variable {
+      name  = "REPOSITORY_NAME"
+      value = aws_ecr_repository.repository.repository_url
+    }
+
+    environment_variable {
+      name  = "DOCKER_CLI_EXPERIMENTAL"
+      value = "enabled"
     }
 
   }
@@ -100,6 +140,11 @@ resource "aws_codebuild_project" "default" {
   logs_config {
     cloudwatch_logs {
     }
+  }
+
+  cache {
+    type  = "LOCAL"
+    modes = ["LOCAL_CUSTOM_CACHE", "LOCAL_DOCKER_LAYER_CACHE", "LOCAL_SOURCE_CACHE"]
   }
 
 

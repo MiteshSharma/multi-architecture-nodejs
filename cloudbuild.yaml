@@ -1,0 +1,53 @@
+steps:
+  
+  - name: gcr.io/cloud-builders/docker
+    id: pull-cached-image
+    entrypoint: bash
+    args:
+      - '-c'
+      - 'docker pull ${_REPOSITORY_NAME}:latest || exit 0'
+    waitFor:
+      - '-'
+  - name: gcr.io/cloud-builders/docker
+    id: initial-run
+    entrypoint: bash
+    args:
+      - '-c'
+      - |
+        chmod +x script-pre-build.sh
+        chmod +x script-post-build.sh
+        chmod +x script-on-build.sh
+        echo "Print all variables"
+        printenv
+    waitFor:
+      - pull-cached-image
+  - name: gcr.io/cloud-builders/docker
+    id: pre-build-run
+    entrypoint: bash
+    args:
+      - '-c'
+      - ./script-pre-build.sh
+    waitFor:
+      - initial-run
+  - name: gcr.io/cloud-builders/docker
+    id: on-build-run
+    entrypoint: bash
+    args:
+      - '-c'
+      - ./script-on-build.sh
+    waitFor:
+      - pre-build-run
+  - name: gcr.io/cloud-builders/docker
+    id: post-build-run
+    entrypoint: bash
+    args:
+      - '-c'
+      - ./script-post-build.sh
+    waitFor:
+      - on-build-run
+timeout: 1h
+options:
+  env:
+    - REPOSITORY_NAME=$_REPOSITORY_NAME
+    - COMMIT_HASH=$COMMIT_SHA
+    - DOCKER_CLI_EXPERIMENTAL=enabled

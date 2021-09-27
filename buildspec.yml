@@ -1,0 +1,31 @@
+version: 0.2
+phases:
+  
+  install:
+    commands:
+      - docker version
+      - chmod +x script-pre-build.sh
+      - chmod +x script-post-build.sh
+      - chmod +x script-on-build.sh
+      - export COMMIT_HASH=${CODEBUILD_RESOLVED_SOURCE_VERSION}
+
+  pre_build:
+    commands:
+      - echo "Print all variables"
+      - printenv
+      
+      - echo "Logging in to Amazon ECR..."
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+
+      - echo "Running pre build script"
+      - ./script-pre-build.sh
+
+  build:
+    commands:
+      - echo "Running on build script"
+      - ./script-on-build.sh
+
+  post_build:
+    commands:
+      - echo "Running post build script"
+      - ./script-post-build.sh

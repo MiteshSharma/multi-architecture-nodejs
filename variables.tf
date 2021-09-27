@@ -1,30 +1,25 @@
 variable "cloud_service_provider" {
-  description = "the name of cloud service provider"
+  description = "Name of cloud service provider"
   type        = string
   default     = "aws"
 }
 
-variable "service_name" {
-  description = "the name of the service"
+variable "gcp_project_name" {
+  description = "Name of GCP project"
   type        = string
-  default     = "rudderstack-nodejs"
+  default     = ""
 }
 
-variable "architecture_list" {
-  description = "the list of architecture name"
-  type        = list(string)
-  default = [
-    "amd64",
-    "i386",
-    "arm32v8",
-    "arm64v8"
-  ]
+variable "service_name" {
+  description = "Name of the service"
+  type        = string
+  default     = "crossx-nodejs"
 }
 
 variable "region" {
   description = "the default region name"
   type        = string
-  default     = "ap-southeast-1"
+  default     = ""
 }
 
 variable "github_credential_token" {
