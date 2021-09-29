@@ -1,5 +1,5 @@
 
-# Rudder Stack NodeJS Multi-Architecture
+# NodeJS Multi-Architecture
 
 ## Background
 
